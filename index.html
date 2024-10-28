@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>反手高遠球影片上傳分析</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>反手高遠球影片上傳分析</h1>
+        <label for="videoFile" class="file-upload" id="fileUploadLabel">
+            <video id="videoPreview" controls style="display: none; width: 100%; max-height: 180px;"></video>
+            <input type="file" id="videoFile" accept="video/*" style="display: none;" onchange="handleFileSelection()">
+        </label>
+        <div class="button-container">
+            <button class="reset-button" onclick="resetFileSelection()">重新選擇</button>
+            <button class="upload-button" onclick="uploadVideo()">上傳分析</button>
+        </div>
+        <p class="loading" id="loadingText">請稍候，影片分析中<span id="loadingDots">.</span></p>
+    </div>
+
+    <div class="container" id="resultContainer" style="display:none;">
+        <h2>分析結果</h2>
+        <table id="resultTable">
+            <tr>
+                <th>分數</th>
+                <th>評論</th>
+            </tr>
+            <tr>
+                <td id="scoreCell" class="highlight-text"></td>
+                <td id="commentCell" class="highlight-text"></td>
+            </tr>
+        </table>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
