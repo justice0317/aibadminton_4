@@ -31,7 +31,7 @@ function uploadVideo() {
     loadingText.style.display = 'block';
     resultContainer.style.display = 'none';
 
-    fetch('http://54.150.30.200:5000/upload_video', {
+    fetch('https://098e-2001-b400-e2a6-b298-dca8-f638-2c44-43bc.ngrok-free.app/upload', {
         method: 'POST',
         body: formData
     })
@@ -69,4 +69,8 @@ function resetFileSelection() {
     commentCell.textContent = '';
 
     fileUploadLabel.classList.remove('has-video');
+}
+
+function goBack() {
+    window.location.href = 'https://previewer.adalo.com/9f754723-deab-48b2-837c-9cc329f37f6b?_gl=1%2Alum0aw%2A_gcl_au%2AOTU4ODkyOTMzLjE3MjkxNjUzMTY.%2A_ga%2ANTk3NzEyMDEwLjE3MjkxNjUzMjI.%2A_ga_SWT45DV35L%2AMTczMDUyNjcxNS4yMS4xLjE3MzA1MjY3MzIuNDMuMC4w&target=09osur8iemi7pactddvh1rg16&params=%7B%7D';
 }
