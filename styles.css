@@ -1,4 +1,4 @@
- body {
+body {
     font-family: Arial, sans-serif;
     text-align: center;
     background-color: #00A898;
@@ -7,6 +7,18 @@
 
 .container {
     margin-top: 50px;
+}
+
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 20px;
+    cursor: pointer;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .file-upload {
