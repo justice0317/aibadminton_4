@@ -1,76 +1,114 @@
-function handleFileSelection() {
-    const fileInput = document.getElementById('videoFile');
-    const videoPreview = document.getElementById('videoPreview');
-    const fileUploadLabel = document.getElementById('fileUploadLabel');
+// 彈跳視窗功能
+const sidebar = document.querySelector('.sidebar');
+const overlay = document.createElement('div');
+const menuButton = document.querySelector('.menu-btn');
+const closeButton = document.querySelector('.close-btn');
 
-    const file = fileInput.files[0];
-    if (file) {
-        const url = URL.createObjectURL(file);
-        videoPreview.src = url;
-        videoPreview.style.display = 'block';
-        fileUploadLabel.classList.add('has-video');
+// 建立遮罩元素
+overlay.classList.add('overlay');
+document.body.appendChild(overlay);
+
+menuButton.addEventListener('click', () => {
+    sidebar.style.left = '0'; // 彈跳視窗展開
+    overlay.classList.add('active'); // 顯示遮罩
+    document.body.classList.add('dimmed'); // 彈跳視窗以外區域透明
+});
+
+closeButton.addEventListener('click', () => {
+    sidebar.style.left = '-100%'; // 彈跳視窗收回
+    overlay.classList.remove('active'); // 隱藏遮罩
+    document.body.classList.remove('dimmed'); // 恢復正常透明度
+});
+
+overlay.addEventListener('click', () => {
+    sidebar.style.left = '-100%'; // 彈跳視窗收回
+    overlay.classList.remove('active'); // 隱藏遮罩
+    document.body.classList.remove('dimmed'); // 恢復正常透明度
+});
+
+// 影片預覽功能
+function triggerUpload() {
+    document.getElementById('videoUpload').click(); // 當點擊影片框時，觸發影片上傳選擇
+}
+
+function previewVideo() {
+    const videoFile = document.getElementById('videoUpload').files[0];
+    const preview = document.getElementById('previewVideo');
+    
+    // 移除提示文字
+    document.getElementById('uploadText').style.display = 'none';
+
+    if (videoFile) {
+        const objectURL = URL.createObjectURL(videoFile);
+        preview.src = objectURL;
+        preview.style.display = 'block';
     }
 }
 
-function uploadVideo() {
-    const fileInput = document.getElementById('videoFile');
-    const file = fileInput.files[0];
-    const loadingText = document.getElementById('loadingText');
-    const resultContainer = document.getElementById('resultContainer');
-    const scoreCell = document.getElementById('scoreCell');
-    const commentCell = document.getElementById('commentCell');
+// 重選影片
+function resetUpload() {
+    document.getElementById('videoUpload').value = ''; // 清除上傳影片
+    const preview = document.getElementById('previewVideo');
+    preview.style.display = 'none'; // 隱藏預覽
 
-    if (!file) {
-        alert('請選擇影片檔案！');
-        return;
+    // 顯示提示文字
+    document.getElementById('uploadText').style.display = 'block';
+    document.getElementById('uploadButtons').style.display = 'flex'; // 顯示上傳與重選按鈕
+    document.getElementById('resultBox').style.display = 'none'; // 隱藏結果區
+    document.getElementById('loading').style.display = 'none'; // 隱藏載入中
+}
+
+// 上傳影片
+function uploadVideo() {
+    const videoFile = document.getElementById('videoUpload').files[0];
+
+    // 檢查是否有選擇影片檔案
+    if (!videoFile) {
+        alert('請選擇影片檔案後再進行上傳。');
+        resetUpload(); // 如果沒選擇檔案，回到原始畫面
+        return; // 結束函式，防止繼續上傳
     }
 
+    // 顯示載入中
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('uploadButtons').style.display = 'none';
+
+    // 開始動畫效果
+    const loadingText = document.getElementById('loading');
+    loadingText.classList.add('dots'); // 啟動動畫
+
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('video', videoFile);
 
-    loadingText.style.display = 'block';
-    resultContainer.style.display = 'none';
-
-    fetch('https://098e-2001-b400-e2a6-b298-dca8-f638-2c44-43bc.ngrok-free.app/upload', {
+    // 使用 Fetch API 將影片上傳到 Flask API
+    fetch('https://1d2b-2001-b400-e78c-5f54-5415-5fa2-37af-90b1.ngrok-free.app/upload', {
         method: 'POST',
         body: formData
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('上傳失敗：' + response.statusText);
-        }
-        return response.json();
-    })
-    .then(result => {
-        loadingText.style.display = 'none';
-        resultContainer.style.display = 'block';
-        scoreCell.textContent = result.score;
-        commentCell.textContent = result.comment;
+    .then(response => response.json())
+    .then(data => {
+        // 處理 API 回傳的結果
+        document.getElementById('loading').style.display = 'none';
+        loadingText.classList.remove('dots'); // 停止動畫
+        document.getElementById('resultBox').style.display = 'flex';
+
+        // 顯示分數、評論與圖片
+        document.getElementById('score').textContent = data.score;
+        document.getElementById('comment').textContent = data.comment;
+        document.getElementById('resultImage').src = data.chart; // 圖表顯示
     })
     .catch(error => {
-        loadingText.style.display = 'none';
-        console.error('錯誤:', error);
-        alert('分析過程中發生錯誤，請稍後再試。');
+        console.error('Error:', error);
+        document.getElementById('loading').style.display = 'none';
+        loadingText.classList.remove('dots');
+
+        // 上傳失敗時重設頁面
+        resetUpload(); // 重新設置初始畫面讓使用者重新上傳
+        alert('影片上傳失敗，請再試一次。');
     });
 }
 
-function resetFileSelection() {
-    const fileInput = document.getElementById('videoFile');
-    const videoPreview = document.getElementById('videoPreview');
-    const resultContainer = document.getElementById('resultContainer');
-    const scoreCell = document.getElementById('scoreCell');
-    const commentCell = document.getElementById('commentCell');
-    const fileUploadLabel = document.getElementById('fileUploadLabel');
-
-    fileInput.value = '';
-    videoPreview.style.display = 'none';
-    resultContainer.style.display = 'none';
-    scoreCell.textContent = '';
-    commentCell.textContent = '';
-
-    fileUploadLabel.classList.remove('has-video');
-}
-
-function goBack() {
-    window.location.href = 'https://previewer.adalo.com/9f754723-deab-48b2-837c-9cc329f37f6b?_gl=1%2Alum0aw%2A_gcl_au%2AOTU4ODkyOTMzLjE3MjkxNjUzMTY.%2A_ga%2ANTk3NzEyMDEwLjE3MjkxNjUzMjI.%2A_ga_SWT45DV35L%2AMTczMDUyNjcxNS4yMS4xLjE3MzA1MjY3MzIuNDMuMC4w&target=09osur8iemi7pactddvh1rg16&params=%7B%7D';
+// 儲存結果
+function saveResult() {
+    alert('結果已儲存！');
 }
