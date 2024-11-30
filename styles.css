@@ -228,13 +228,13 @@ body {
 
 .result-buttons {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     width: 100%;
     margin-top: 20px;
 }
 
 .result-buttons .btn {
-    width: 48%;
+    width: 30%;
 }
 
 /* 確保畫面下方有空間 */
